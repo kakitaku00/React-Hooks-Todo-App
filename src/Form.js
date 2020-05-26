@@ -1,16 +1,23 @@
-import React,{useState} from 'react'
-import { useHistory} from 'react-router-dom';
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import axios from "axios";
+import { PATH } from "./config";
 
-function Form({addTodo}) {
+function Form() {
+  const [myText, changeMyText] = useState("");
+  const history = useHistory();
 
-  const [myText , changeMyText] = useState('')
-  const history = useHistory()
-
-  const handleSave = () =>{
-    if(!myText)return
-    addTodo(myText)
-    history.push('/')
-  }
+  const handleSave = () => {
+    if (!myText) return;
+    axios
+      .post("https://mbc.to-r.net/react-todo/todos", {
+        title: myText,
+        checked: false,
+      })
+      .then(() => {
+        history.push("/");
+      });
+  };
 
   return (
     <div className="form">
@@ -19,10 +26,10 @@ function Form({addTodo}) {
         type="text"
         id="text"
         value={myText}
-        onChange={e=>changeMyText(e.currentTarget.value)}
+        onChange={(e) => changeMyText(e.currentTarget.value)}
       />
-      <input type="button" value="追加" onClick={handleSave}/>
+      <input type="button" value="追加" onClick={handleSave} />
     </div>
   );
 }
-export default Form
+export default Form;
