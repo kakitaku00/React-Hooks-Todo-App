@@ -55,6 +55,7 @@ function List({ finished }) {
     );
   };
 
+  // ページングを自前で実装
   const renderPager = () => {
     const maxPage = todoList
       .filter((todo) => todo.checked === finished)
