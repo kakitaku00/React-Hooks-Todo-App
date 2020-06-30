@@ -1,23 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import axios from "axios";
-import { PATH } from "./config";
+import useTodo from "./useTodo";
 
 function Delete() {
-  const [todo, changeTodo] = useState(null);
-  const { key } = useParams();
+  const { todo, isDeleting, fetchTodo, deleteTodo } = useTodo();
+
   const history = useHistory();
+  const { key } = useParams();
 
   useEffect(() => {
-    axios.get("https://mbc.to-r.net/react-todo/todo/" + key).then((res) => {
-      changeTodo(res.data);
-    });
+    fetchTodo(key);
   }, []);
 
-  const handleDelete = () => {
-    axios.delete("https://mbc.to-r.net/react-todo/todo/" + key).then((res) => {
-      history.push("/");
-    });
+  const handleDelete = async () => {
+    await deleteTodo(key);
+    history.push("/");
   };
 
   if (!todo) {
@@ -27,7 +24,12 @@ function Delete() {
   return (
     <div className="form">
       <p>「{todo.title}」削除して良いですか？</p>
-      <input type="button" value="削除" onClick={handleDelete} />
+      <input
+        type="button"
+        value="削除"
+        onClick={handleDelete}
+        disabled={isDeleting}
+      />
     </div>
   );
 }

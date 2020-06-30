@@ -1,48 +1,84 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { PATH } from "./config";
+import useTodo from "./useTodo";
 
 function List({ finished }) {
-  const [todoList, changeTodoList] = useState([]);
+  const {
+    todoList,
+    isFetchTodoList,
+    togglingTodo,
+    fetchTodoList,
+    toggleTodo,
+  } = useTodo();
+
+  const [currentPage, changeCurrentPage] = useState(1);
 
   useEffect(() => {
-    axios.get("https://mbc.to-r.net/react-todo/todos").then((res) => {
-      console.log(res.data);
-      changeTodoList(res.data);
-    });
+    fetchTodoList();
   }, []);
 
-  const toggleTodo = (todo) => {
-    const newTodo = {
-      ...todo,
-      checked: !todo.checked,
-    };
-    axios
-      .put("https://mbc.to-r.net/react-todo/todo/" + todo.id, newTodo)
-      .then(() => {
-        const newTodoList = todoList.map((_todo) =>
-          _todo.id === todo.id ? newTodo : _todo
-        );
-        changeTodoList(newTodoList);
-      });
+  useEffect(() => {
+    renderTodoList(currentPage);
+  }, [currentPage, togglingTodo]);
+
+  const handleToggleTodo = (todo) => {
+    toggleTodo(todo);
+  };
+
+  if (isFetchTodoList) {
+    return <p>Loading...</p>;
+  }
+
+  const renderTodoList = (page) => {
+    return (
+      <div>
+        <ul className="list">
+          {todoList
+            .filter((todo) => todo.checked === finished)
+            .map((todo) => (
+              <li key={todo.id}>
+                <p>{todo.title}</p>
+                <button
+                  type="button"
+                  onClick={() => handleToggleTodo(todo)}
+                  disabled={togglingTodo === todo.id}
+                >
+                  {todo.checked ? "再開" : "終了"}
+                </button>
+                <Link to={`delete/${todo.id}`}>削除</Link>
+                <Link to={`edit/${todo.id}`}>編集</Link>
+              </li>
+            ))
+            .slice((page - 1) * 5, page * 5)}
+        </ul>
+      </div>
+    );
+  };
+
+  const renderPager = () => {
+    const maxPage = todoList
+      .filter((todo) => todo.checked === finished)
+      .filter((todo, index) => index % 5 === 0);
+    return (
+      <div>
+        {maxPage.map((page, index) => (
+          <button
+            key={index}
+            onClick={() => changeCurrentPage(index)}
+            disabled={currentPage === index + 1}
+          >
+            {(index += 1)}
+          </button>
+        ))}
+      </div>
+    );
   };
 
   return (
-    <ul className="list">
-      {todoList
-        .filter((todo) => todo.checked === finished)
-        .map((todo) => (
-          <li key={todo.id}>
-            <p>{todo.title}</p>
-            <button type="button" onClick={() => toggleTodo(todo)}>
-              {todo.checked ? "再開" : "終了"}
-            </button>
-            <Link to={`delete/${todo.id}`}>削除</Link>
-            <Link to={`edit/${todo.id}`}>編集</Link>
-          </li>
-        ))}
-    </ul>
+    <div>
+      {renderTodoList(currentPage)}
+      {renderPager()}
+    </div>
   );
 }
 export default List;

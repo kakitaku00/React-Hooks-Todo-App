@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import axios from "axios";
-import { PATH } from "./config";
+import { useParams, useHistory } from "react-router-dom";
+import useTodo from "./useTodo";
 
 function Edit() {
-  const { key } = useParams();
-  const history = useHistory();
+  const { todo, isEditing, fetchTodo, editTodo } = useTodo();
 
-  const [todo, changeTodo] = useState(null);
+  const [myText, changeMyText] = useState("");
+  const history = useHistory();
+  const { key } = useParams();
 
   useEffect(() => {
-    axios.get("https://mbc.to-r.net/react-todo/todo/" + key).then((res) => {
-      changeTodo(res.data);
-    });
+    if (!todo) return;
+    changeMyText(todo.title);
+  }, [todo]);
+
+  useEffect(() => {
+    fetchTodo(key);
   }, []);
 
-  const handleSave = () => {
-    if (!todo.title) return;
-    axios
-      .put("https://mbc.to-r.net/react-todo/todo/" + key, todo)
-      .then((res) => {
-        history.push("/");
-      });
+  const handleSave = async () => {
+    if (!myText) return;
+    await editTodo(key, myText);
+    history.push("/");
   };
 
   if (!todo) {
@@ -33,15 +33,15 @@ function Edit() {
       <label htmlFor="text">編集:</label>
       <input
         type="text"
-        value={todo.title}
-        onChange={(e) =>
-          changeTodo({
-            ...todo,
-            title: e.currentTarget.value,
-          })
-        }
+        value={myText}
+        onChange={(e) => changeMyText(e.currentTarget.value)}
       />
-      <input type="button" value="編集" onClick={handleSave} />
+      <input
+        type="button"
+        value="編集"
+        onClick={handleSave}
+        disabled={isEditing}
+      />
     </div>
   );
 }
