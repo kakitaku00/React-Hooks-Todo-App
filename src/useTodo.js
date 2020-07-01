@@ -25,7 +25,7 @@ function useTodo() {
 
   const fetchTodoList = () => {
     dispatch(fetchTodoListAction());
-    axios.get("https://mbc.to-r.net/react-todo/todos").then((res) => {
+    axios.get(process.env.REACT_APP_DEV_TODO_API_URL + "todos").then((res) => {
       dispatch(successFetchTodoListAction(res.data));
     });
   };
@@ -37,7 +37,7 @@ function useTodo() {
       checked: !todo.checked,
     };
     axios
-      .put("https://mbc.to-r.net/react-todo/todo/" + todo.id, newTodo)
+      .put(process.env.REACT_APP_DEV_TODO_API_URL + "todo/" + todo.id, newTodo)
       .then(() => {
         dispatch(successToggleTodoAction(todo.id));
       });
@@ -45,15 +45,17 @@ function useTodo() {
 
   const fetchTodo = (key) => {
     dispatch(fetchTodoAction());
-    axios.get("https://mbc.to-r.net/react-todo/todo/" + key).then((res) => {
-      dispatch(successFetchTodoAction(res.data));
-    });
+    axios
+      .get(process.env.REACT_APP_DEV_TODO_API_URL + "todo/" + key)
+      .then((res) => {
+        dispatch(successFetchTodoAction(res.data));
+      });
   };
 
   const deleteTodo = async (key) => {
     dispatch(deleteTodoAction());
     await axios
-      .delete("https://mbc.to-r.net/react-todo/todo/" + key)
+      .delete(process.env.REACT_APP_DEV_TODO_API_URL + "todo/" + key)
       .then((res) => {
         dispatch(successDeleteTodoAction());
       });
@@ -66,7 +68,7 @@ function useTodo() {
       title: myText,
     };
     await axios
-      .put("https://mbc.to-r.net/react-todo/todo/" + key, newTodo)
+      .put(process.env.REACT_APP_DEV_TODO_API_URL + "todo/" + key, newTodo)
       .then((res) => {
         dispatch(successEditTodoAction());
       });
