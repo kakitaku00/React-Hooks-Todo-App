@@ -16,6 +16,7 @@ function Edit() {
 
   useEffect(() => {
     fetchTodo(key);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSave = async () => {

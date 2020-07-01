@@ -10,6 +10,7 @@ function Delete() {
 
   useEffect(() => {
     fetchTodo(key);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDelete = async () => {

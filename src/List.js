@@ -15,10 +15,13 @@ function List({ finished }) {
 
   useEffect(() => {
     fetchTodoList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     renderTodoList(currentPage);
+    // 以下をコメントに追加する事でwarningを発生させないようにできる
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, togglingTodo]);
 
   const handleToggleTodo = (todo) => {
